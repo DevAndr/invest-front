@@ -1,7 +1,7 @@
 "use client"
 
 import {useState, useCallback, useMemo} from "react"
-import {Search, X, Plus, TrendingUp, Loader2} from "lucide-react"
+import {Search, X, Plus, TrendingUp, Loader2, StickyNote} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {ProfitChart} from "@/components/dashboard/ProfitChart"
 import {useGetCompanies} from "@/app/api/companies/useGetCompanies"
@@ -11,13 +11,15 @@ import type {FinancialData} from "@/app/api/profits/types"
 import {MetricFilters} from "@/components/admin/filters/MetricFilters";
 import {MetricKey, METRICS} from "@/components/admin/filters/Metrics/constants";
 import {ShadcnProfitChart} from "@/components/dashboard/ShadcnProfitChart";
+import {NotesPanel} from "@/components/dashboard/NotesPanel";
+import {CompaniesPanel} from "@/components/dashboard/CompaniesPanel/CompaniesPanel";
 
 const COMPANY_COLORS = [
     "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6",
     "#ec4899", "#06b6d4", "#f97316",
 ]
 
-interface SelectedCompany {
+export interface SelectedCompany {
     company: Company
     profits: FinancialData[]
     color: string
@@ -52,6 +54,7 @@ export default function CompaniesPage() {
 
     const [selected, setSelected] = useState<SelectedCompany[]>([])
     const [metric, setMetric] = useState<MetricKey>("netProfit")
+    const [activeCompanyForNotes, setActiveCompanyForNotes] = useState<{ id: string, name: string } | null>(null)
 
     const companies = companiesData?.data ?? []
 
@@ -105,66 +108,16 @@ export default function CompaniesPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
                 {/* Левая панель — выбор компаний */}
-                <div className="space-y-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"/>
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Поиск компании..."
-                            className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                    </div>
-
-                    <div className="rounded-xl border border-border overflow-hidden">
-                        <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
-                            {isLoading ? (
-                                <div className="flex items-center justify-center py-8">
-                                    <Loader2 className="size-5 animate-spin text-muted-foreground"/>
-                                </div>
-                            ) : companies.length === 0 ? (
-                                <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                                    Ничего не найдено
-                                </div>
-                            ) : (
-                                companies.map((company) => {
-                                    const isSelected = selectedIds.includes(company.id)
-                                    const selectedEntry = selected.find((s) => s.company.id === company.id)
-                                    return (
-                                        <button
-                                            key={company.id}
-                                            onClick={() => toggleCompany(company)}
-                                            disabled={isProfitsLoading}
-                                            className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition-colors border-b border-border last:border-0 disabled:opacity-50 ${
-                                                isSelected
-                                                    ? "bg-accent/50"
-                                                    : "hover:bg-muted/30"
-                                            }`}
-                                        >
-                                            <div
-                                                className="size-3 rounded-full shrink-0 border-2"
-                                                style={{
-                                                    backgroundColor: isSelected ? selectedEntry?.color : "transparent",
-                                                    borderColor: isSelected ? selectedEntry?.color : "var(--border)",
-                                                }}
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <span className="font-medium">{company.name}</span>
-                                                <span
-                                                    className="text-muted-foreground ml-2 text-xs font-mono">{company.ticker}</span>
-                                            </div>
-                                            <span className="text-xs text-muted-foreground">{company.industry}</span>
-                                            {!isSelected && (
-                                                <Plus className="size-4 text-muted-foreground"/>
-                                            )}
-                                        </button>
-                                    )
-                                })
-                            )}
-                        </div>
-                    </div>
-                </div>
+                <CompaniesPanel
+                    companies={companies}
+                    toggleCompany={toggleCompany}
+                    isProfitsLoading={isProfitsLoading}
+                    isLoading={isLoading}
+                    search={search}
+                    selectedIds={selectedIds}
+                    selected={selected}
+                    onSearch={setSearch}
+                    onSetActiveCompanyForNotes={(value) => setActiveCompanyForNotes(value)}/>
 
                 {/* Правая панель — график */}
                 <div className="space-y-4">
@@ -224,6 +177,13 @@ export default function CompaniesPage() {
                     </div>
                 </div>
             </div>
+
+            <NotesPanel
+                companyId={activeCompanyForNotes?.id ?? null}
+                companyName={activeCompanyForNotes?.name ?? ""}
+                open={!!activeCompanyForNotes}
+                onClose={() => setActiveCompanyForNotes(null)}
+            />
         </div>
     )
 }
