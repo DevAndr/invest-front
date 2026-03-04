@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useCallback} from "react"
+import {useState, useCallback, useMemo} from "react"
 import {Search, X, Plus, TrendingUp, Loader2} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {ProfitChart} from "@/components/dashboard/ProfitChart"
@@ -8,6 +8,8 @@ import {useGetCompanies} from "@/app/api/companies/useGetCompanies"
 import {useGetProfitsByCompanyMutation} from "@/app/api/profits/useGetProfitsByCompany"
 import type {Company} from "@/app/api/companies/types"
 import type {FinancialData} from "@/app/api/profits/types"
+import {MetricFilters} from "@/components/admin/filters/MetricFilters";
+import {MetricKey, METRICS} from "@/components/admin/filters/Metrics/constants";
 
 const COMPANY_COLORS = [
     "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6",
@@ -20,7 +22,7 @@ interface SelectedCompany {
     color: string
 }
 
-function buildChartData(selected: SelectedCompany[]) {
+function buildChartData(selected: SelectedCompany[], metric: MetricKey) {
     if (selected.length === 0) return []
 
     const periodsSet = new Set<string>()
@@ -28,15 +30,15 @@ function buildChartData(selected: SelectedCompany[]) {
         profits.forEach((p) => periodsSet.add(p.period))
     })
 
-    const periods = Array.from(periodsSet).sort()
+    const periods = Array.from(periodsSet).sort(
+        (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    )
 
     return periods.map((period) => {
-        const point: Record<string, string | number> = {quarter: period}
+        const point: Record<string, string | number | null> = {quarter: period}
         selected.forEach(({company, profits}) => {
             const entry = profits.find((p) => p.period === period)
-            if (entry) {
-                point[company.ticker] = entry.netProfit
-            }
+            point[company.ticker] = entry ? entry[metric] : null
         })
         return point
     })
@@ -48,6 +50,7 @@ export default function CompaniesPage() {
     const {mutateAsync: getProfits, isPending: isProfitsLoading} = useGetProfitsByCompanyMutation()
 
     const [selected, setSelected] = useState<SelectedCompany[]>([])
+    const [metric, setMetric] = useState<MetricKey>("netProfit")
 
     const companies = companiesData?.data ?? []
 
@@ -86,9 +89,9 @@ export default function CompaniesPage() {
 
     const clearAll = useCallback(() => setSelected([]), [])
 
-    const chartData = buildChartData(selected)
+    const chartData = useMemo(() => buildChartData(selected, metric), [selected, metric])
 
-    console.log({companies, companiesData})
+    const activeMetricLabel = METRICS.find((m) => m.key === metric)?.label ?? ""
 
     return (
         <div className="space-y-6">
@@ -147,7 +150,8 @@ export default function CompaniesPage() {
                                             />
                                             <div className="flex-1 min-w-0">
                                                 <span className="font-medium">{company.name}</span>
-                                                <span className="text-muted-foreground ml-2 text-xs font-mono">{company.ticker}</span>
+                                                <span
+                                                    className="text-muted-foreground ml-2 text-xs font-mono">{company.ticker}</span>
                                             </div>
                                             <span className="text-xs text-muted-foreground">{company.industry}</span>
                                             {!isSelected && (
@@ -194,7 +198,7 @@ export default function CompaniesPage() {
                             </Button>
                         </div>
                     )}
-
+                    <MetricFilters currentMetric={metric} oncClickMetric={(key) => setMetric(key)}/>
                     {/* График */}
                     <div className="rounded-xl border border-border bg-card p-5">
                         {selected.length === 0 ? (
@@ -205,7 +209,7 @@ export default function CompaniesPage() {
                         ) : (
                             <div className="space-y-3">
                                 <h2 className="text-sm font-medium text-muted-foreground">
-                                    Чистая прибыль по периодам
+                                    {activeMetricLabel} по периодам
                                 </h2>
                                 <ProfitChart
                                     data={chartData}

@@ -9,12 +9,44 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
+    type TooltipProps,
 } from "recharts"
 import dayjs from "dayjs"
 
 interface ProfitChartProps {
-    data: Record<string, string | number>[]
+    data: Record<string, string | number | null>[]
     companies: {ticker: string; color: string}[]
+}
+
+function CustomTooltip({active, payload, label}: TooltipProps<number, string>) {
+    if (!active || !payload?.length) return null
+
+    return (
+        <div className="rounded-lg border border-border bg-popover px-3 py-2.5 shadow-lg">
+            <p className="text-xs font-semibold text-popover-foreground mb-1.5">
+                {dayjs(label).format("DD.MM.YYYY")}
+            </p>
+            <div className="space-y-1">
+                {payload.map((entry) => {
+                    if (entry.value == null) return null
+                    return (
+                        <div key={entry.dataKey} className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-1.5">
+                                <span
+                                    className="size-2 rounded-full"
+                                    style={{backgroundColor: entry.color}}
+                                />
+                                <span className="text-xs text-muted-foreground">{entry.dataKey}</span>
+                            </div>
+                            <span className="text-xs font-medium text-popover-foreground tabular-nums">
+                                {Number(entry.value).toLocaleString("ru-RU")}
+                            </span>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    )
 }
 
 export function ProfitChart({data, companies}: ProfitChartProps) {
@@ -40,19 +72,7 @@ export function ProfitChart({data, companies}: ProfitChartProps) {
                         tickLine={false}
                         width={45}
                     />
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: "var(--popover)",
-                            border: "1px solid var(--border)",
-                            borderRadius: "8px",
-                            fontSize: "13px",
-                            color: "var(--popover-foreground)",
-                        }}
-                        labelStyle={{
-                            fontWeight: 600,
-                            marginBottom: "4px",
-                        }}
-                    />
+                    <Tooltip content={<CustomTooltip/>}/>
                     <Legend
                         iconType="circle"
                         iconSize={8}
@@ -67,6 +87,7 @@ export function ProfitChart({data, companies}: ProfitChartProps) {
                             strokeWidth={2}
                             dot={{r: 4, fill: company.color}}
                             activeDot={{r: 6}}
+                            connectNulls={true}
                         />
                     ))}
                 </LineChart>
