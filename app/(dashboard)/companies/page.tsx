@@ -10,6 +10,7 @@ import type {Company} from "@/app/api/companies/types"
 import type {FinancialData} from "@/app/api/profits/types"
 import {MetricFilters} from "@/components/admin/filters/MetricFilters";
 import {MetricKey, METRICS} from "@/components/admin/filters/Metrics/constants";
+import {ShadcnProfitChart} from "@/components/dashboard/ShadcnProfitChart";
 
 const COMPANY_COLORS = [
     "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6",
@@ -211,7 +212,7 @@ export default function CompaniesPage() {
                                 <h2 className="text-sm font-medium text-muted-foreground">
                                     {activeMetricLabel} по периодам
                                 </h2>
-                                <ProfitChart
+                                <ShadcnProfitChart
                                     data={chartData}
                                     companies={selected.map((s) => ({
                                         ticker: s.company.ticker,
