@@ -1,6 +1,7 @@
 import {axiosInstance} from "@/app/api/axios/axiosInstance"
 import {useMutation} from "@tanstack/react-query"
 import {AxiosError} from "axios"
+import {queryClient} from "@/app/layout";
 
 type Request = {
     file: File
@@ -27,5 +28,8 @@ const importCSV = async ({file, companyName, ticker, industry}: Request) => {
 export const useImportCSV = () => {
     return useMutation<Response, AxiosError, Request>({
         mutationFn: importCSV,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ['companies']})
+        }
     })
 }

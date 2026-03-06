@@ -65,7 +65,6 @@ export default function CompaniesPage() {
                         <tr>
                             <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
                                 <Spinner/>
-                                Загрузка...
                             </td>
                         </tr>
                     ) : companies.length === 0 ? (
