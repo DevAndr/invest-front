@@ -35,7 +35,7 @@ export const CompaniesPanel: FC<Props> = ({
 
     return <div className="space-y-4">
         <div className="relative">
-            <InputGroup className="max-w-xs">
+            <InputGroup className="w-full">
                 <InputGroupInput placeholder="Поиск компании..."
                                  value={search}
                                  onChange={(e) => onSearch(e.target.value)}

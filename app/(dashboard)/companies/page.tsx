@@ -113,7 +113,7 @@ export default function CompaniesPage() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
                 {/* Левая панель — выбор компаний */}
                 <CompaniesPanel
                     companies={companies}
