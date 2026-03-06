@@ -1,9 +1,8 @@
 "use client"
 
 import {useState, useCallback, useMemo} from "react"
-import {Search, X, Plus, TrendingUp, Loader2, StickyNote} from "lucide-react"
+import {X, TrendingUp} from "lucide-react"
 import {Button} from "@/components/ui/button"
-import {ProfitChart} from "@/components/dashboard/ProfitChart"
 import {useGetCompanies} from "@/app/api/companies/useGetCompanies"
 import {useGetProfitsByCompanyMutation} from "@/app/api/profits/useGetProfitsByCompany"
 import type {Company} from "@/app/api/companies/types"
@@ -13,6 +12,9 @@ import {MetricKey, METRICS} from "@/components/admin/filters/Metrics/constants";
 import {ShadcnProfitChart} from "@/components/dashboard/ShadcnProfitChart";
 import {NotesPanel} from "@/components/dashboard/NotesPanel";
 import {CompaniesPanel} from "@/components/dashboard/CompaniesPanel/CompaniesPanel";
+import {MetricsWidget} from "@/components/dashboard/MetricsWidget";
+import {AnalysisWidget} from "@/components/dashboard/AnalysisWidget";
+import {PortfolioWidget} from "@/components/dashboard/PortfolioWidget";
 
 const COMPANY_COLORS = [
     "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6",
@@ -55,6 +57,7 @@ export default function CompaniesPage() {
     const [selected, setSelected] = useState<SelectedCompany[]>([])
     const [metric, setMetric] = useState<MetricKey>("netProfit")
     const [activeCompanyForNotes, setActiveCompanyForNotes] = useState<{ id: string, name: string } | null>(null)
+    const [activeAnalysisId, setActiveAnalysisId] = useState<string | null>(null)
 
     const companies = companiesData?.data ?? []
 
@@ -68,6 +71,7 @@ export default function CompaniesPage() {
 
         try {
             const profits = await getProfits({id: company.id})
+            setActiveAnalysisId(company.id)
             setSelected((prev) => [
                 ...prev,
                 {
@@ -91,7 +95,10 @@ export default function CompaniesPage() {
         })
     }, [])
 
-    const clearAll = useCallback(() => setSelected([]), [])
+    const clearAll = useCallback(() => {
+        setSelected([]);
+        setActiveAnalysisId(null);
+    }, [])
 
     const chartData = useMemo(() => buildChartData(selected, metric), [selected, metric])
 
@@ -175,6 +182,10 @@ export default function CompaniesPage() {
                             </div>
                         )}
                     </div>
+
+                    <MetricsWidget companyId={activeAnalysisId}/>
+                    <AnalysisWidget companyId={activeAnalysisId}/>
+                    <PortfolioWidget/>
                 </div>
             </div>
 

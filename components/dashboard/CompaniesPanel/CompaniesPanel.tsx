@@ -1,7 +1,7 @@
 'use client'
 
 import {FC} from "react";
-import {Plus, Search, StickyNote} from "lucide-react";
+import {Search} from "lucide-react";
 import {Company} from "@/app/api/companies/types";
 import {SelectedCompany} from "@/app/(dashboard)/companies/page";
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group";

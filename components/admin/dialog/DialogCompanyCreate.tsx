@@ -12,6 +12,9 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import {formatFileSize} from "@/utils/formatFileSize";
+import {useImportCSV} from "@/app/api/upload/useImportCSV";
+import {Spinner} from "@/components/ui/spinner";
+import {toast} from "sonner";
 
 interface DialogCompanyCreateProps {
     open: boolean
@@ -25,6 +28,8 @@ export function DialogCompanyCreate({open, onOpenChange}: DialogCompanyCreatePro
     const [file, setFile] = useState<File | null>(null)
     const [dragging, setDragging] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const {mutate: uploadData, isPending} = useImportCSV()
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault()
@@ -67,8 +72,15 @@ export function DialogCompanyCreate({open, onOpenChange}: DialogCompanyCreatePro
         e.preventDefault()
         // TODO: отправка данных
         console.log({companyName, ticker, industry, file})
-        onOpenChange(false)
-        resetForm()
+        if (file) {
+            uploadData({companyName, ticker, industry, file}, {onSuccess: ()=> {
+                toast.success('Данные загружены')
+                onOpenChange(false)
+                resetForm()
+            }})
+        } else {
+            toast.info('Загрузите файл')
+        }
     }
 
     const resetForm = () => {
@@ -140,7 +152,8 @@ export function DialogCompanyCreate({open, onOpenChange}: DialogCompanyCreatePro
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Файл</label>
                         {file ? (
-                            <div className="flex items-center gap-3 rounded-md border border-border bg-muted/30 px-3 py-3">
+                            <div
+                                className="flex items-center gap-3 rounded-md border border-border bg-muted/30 px-3 py-3">
                                 <FileIcon className="size-5 text-muted-foreground shrink-0"/>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium truncate">{file.name}</p>
@@ -189,6 +202,7 @@ export function DialogCompanyCreate({open, onOpenChange}: DialogCompanyCreatePro
                             Отмена
                         </Button>
                         <Button type="submit">
+                            {isPending && <Spinner data-icon="inline-start" />}
                             Добавить
                         </Button>
                     </DialogFooter>

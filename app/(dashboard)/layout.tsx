@@ -1,26 +1,29 @@
-'use client'
-
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import React, {ReactNode} from "react";
+import {SplashScreen} from "@/components/SplashScreen";
+import {Toaster} from "@/components/ui/sonner";
+import {TooltipProvider} from "@/components/ui/tooltip";
 
 type DashboardProps = {
     children: ReactNode
 }
 
-const queryClient = new QueryClient()
-
 export default function DashboardLayout({children}: DashboardProps) {
     return (
-        <QueryClientProvider client={queryClient}>
-            <header>
-                {/* <Appbar/> */}
-            </header>
-            <main className='m-6'>
-                {children}
-            </main>
-            <footer>
+        <SplashScreen>
+            <TooltipProvider>
+                <header>
+                    {/* <Appbar/> */}
+                </header>
+                <main className='m-6'>
 
-            </footer>
-        </QueryClientProvider>
+                    {children}
+
+                    <Toaster/>
+                </main>
+                <footer>
+
+                </footer>
+            </TooltipProvider>
+        </SplashScreen>
     )
 }

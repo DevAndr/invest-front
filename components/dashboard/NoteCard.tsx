@@ -6,6 +6,7 @@ import {Button} from "@/components/ui/button"
 import {NoteForm} from "@/components/dashboard/NoteForm"
 import type {Note} from "@/app/api/notes/types"
 import dayjs from "dayjs"
+import {useUserId} from "@/stores/userStore";
 
 interface NoteCardProps {
     note: Note
@@ -15,6 +16,7 @@ interface NoteCardProps {
 }
 
 export function NoteCard({note, onUpdate, onDelete, isUpdating}: NoteCardProps) {
+    const currentUserId = useUserId();
     const [isEditing, setIsEditing] = useState(false)
 
     const handleDelete = () => {
@@ -37,6 +39,8 @@ export function NoteCard({note, onUpdate, onDelete, isUpdating}: NoteCardProps) 
         )
     }
 
+    const isYouAuthor =  currentUserId === note.user.id;
+
     return (
         <div className="group rounded-lg border border-border bg-card p-4 space-y-2">
             {note.content && (
@@ -44,6 +48,8 @@ export function NoteCard({note, onUpdate, onDelete, isUpdating}: NoteCardProps) 
             )}
             <div className="flex items-start justify-between gap-2">
                 <p className="text-xs text-muted-foreground/60">
+                    {note.user?.name && <span className="font-medium text-muted-foreground">{isYouAuthor ? 'Вы' : note.user.name}</span>}
+                    {note.user?.name && " · "}
                     {dayjs(note.updatedAt).format("DD.MM.YYYY HH:mm")}
                 </p>
                 <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">

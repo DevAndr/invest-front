@@ -10,6 +10,7 @@ import {useGetNotes} from "@/app/api/notes/useGetNotes"
 import {useCreateNote} from "@/app/api/notes/useCreateNote"
 import {useUpdateNote} from "@/app/api/notes/useUpdateNote"
 import {useDeleteNote} from "@/app/api/notes/useDeleteNote"
+import {Spinner} from "@/components/ui/spinner";
 
 interface NotesPanelProps {
     companyId: string | null
@@ -78,7 +79,7 @@ export function NotesPanel({companyId, companyName, open, onClose}: NotesPanelPr
 
                     {isLoading ? (
                         <div className="flex items-center justify-center py-8">
-                            <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                            <Spinner />
                         </div>
                     ) : !notes || notes.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">

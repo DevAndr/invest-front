@@ -1,11 +1,12 @@
 export function saveToken(token: string): void {
-    localStorage.setItem("accessToken", token);
+    window.localStorage.setItem("accessToken", token);
 }
 
 export function getToken(): string | null {
-    return localStorage.getItem("accessToken");
+    if (typeof window === 'undefined') return null;
+    return window.localStorage.getItem("accessToken");
 }
 
 export function clearToken(): void {
-    localStorage.removeItem("accessToken");
+    window.localStorage.removeItem("accessToken");
 }
