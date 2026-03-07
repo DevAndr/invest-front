@@ -3,7 +3,7 @@ import {clearToken, getToken} from "@/utils/getAccessToken";
 
 
 export const axiosInstance = axios.create({
-    baseURL: "http://localhost:3030/api",
+    baseURL: process.env.NEXT_PUBLIC_API,
     headers: { "Content-Type": "application/json" },
 })
 
