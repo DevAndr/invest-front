@@ -2,8 +2,8 @@
 
 import {
     ResponsiveContainer,
-    LineChart,
-    Line,
+    AreaChart,
+    Area,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -53,7 +53,15 @@ export function ProfitChart({data, companies}: ProfitChartProps) {
     return (
         <div className="h-[600px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{top: 5, right: 10, left: 10, bottom: 40}}>
+                <AreaChart data={data} margin={{top: 5, right: 10, left: 10, bottom: 40}}>
+                    <defs>
+                        {companies.map((company) => (
+                            <linearGradient key={company.ticker} id={`color-${company.ticker}`} x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor={company.color} stopOpacity={0.2}/>
+                                <stop offset="95%" stopColor={company.color} stopOpacity={0}/>
+                            </linearGradient>
+                        ))}
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5}/>
                     <XAxis
                         dataKey="quarter"
@@ -79,18 +87,17 @@ export function ProfitChart({data, companies}: ProfitChartProps) {
                         wrapperStyle={{fontSize: "13px"}}
                     />
                     {companies.map((company) => (
-                        <Line
+                        <Area
                             key={company.ticker}
                             type="monotone"
                             dataKey={company.ticker}
                             stroke={company.color}
+                            fill={`url(#color-${company.ticker})`}
                             strokeWidth={2}
-                            dot={{r: 4, fill: company.color}}
-                            activeDot={{r: 6}}
                             connectNulls={true}
                         />
                     ))}
-                </LineChart>
+                </AreaChart>
             </ResponsiveContainer>
         </div>
     )
