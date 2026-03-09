@@ -60,7 +60,7 @@ export default function AdminPage() {
                         {[
                             {label: "Добавить компанию", icon: Building2, href: "/admin/companies"},
                             {label: "Пользователи", icon: Users, href: "/admin/users"},
-                            {label: "Создать отчёт", icon: FileText, href: "/admin/reports"},
+                            {label: "Анализировать компании", icon: FileText, href: "/companies"},
                             {label: "Аналитика", icon: BarChart3, href: "/admin/analytics"},
                         ].map((action) => (
                             <a

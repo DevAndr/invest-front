@@ -9,12 +9,13 @@ import type {Company} from "@/app/api/companies/types"
 import type {FinancialData} from "@/app/api/profits/types"
 import {MetricFilters} from "@/components/admin/filters/MetricFilters";
 import {MetricKey, METRICS} from "@/components/admin/filters/Metrics/constants";
-import {ShadcnProfitChart} from "@/components/dashboard/ShadcnProfitChart";
 import {NotesPanel} from "@/components/dashboard/NotesPanel";
 import {CompaniesPanel} from "@/components/dashboard/CompaniesPanel/CompaniesPanel";
 import {MetricsWidget} from "@/components/dashboard/MetricsWidget";
 import {AnalysisWidget} from "@/components/dashboard/AnalysisWidget";
 import {PortfolioWidget} from "@/components/dashboard/PortfolioWidget";
+import Link from "next/link";
+import {ProfitChart} from "@/components/dashboard/ProfitChart";
 
 const COMPANY_COLORS = [
     "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6",
@@ -127,11 +128,16 @@ export default function CompaniesPage() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-semibold tracking-tight">Сравнение компаний</h1>
-                <p className="text-muted-foreground text-sm mt-1">
-                    Выберите компании для сравнения доходности и прибыли
-                </p>
+            <div className='flex justify-between'>
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight">Сравнение компаний</h1>
+                    <p className="text-muted-foreground text-sm mt-1">
+                        Выберите компании для сравнения доходности и прибыли
+                    </p>
+                </div>
+                <div>
+                    <Link href='/admin/companies' className='bg-gray-200 text-black rounded-sm py-1 px-2'>В админку</Link>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
@@ -194,7 +200,7 @@ export default function CompaniesPage() {
                                 <h2 className="text-sm font-medium text-muted-foreground">
                                     {activeMetricLabel} по периодам
                                 </h2>
-                                <ShadcnProfitChart
+                                <ProfitChart
                                     data={chartData}
                                     companies={selected.map((s) => ({
                                         ticker: s.company.ticker,
