@@ -66,7 +66,7 @@ export function PortfolioWidget() {
                 <SummaryCard label="Портфель" value={`${fmt(totalPortfolio)} ₽`}/>
                 <SummaryCard label="Акции" value={`${fmt(totalShares)} ₽`}/>
                 <SummaryCard
-                    label="За день"
+                    label="За день PnL"
                     value={`${isDailyUp ? "+" : ""}${fmt(dailyYield)} ₽`}
                     sub={`${isDailyUp ? "+" : ""}${dailyYieldRel.toFixed(2)}%`}
                     positive={isDailyUp}

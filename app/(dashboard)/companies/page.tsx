@@ -100,6 +100,27 @@ export default function CompaniesPage() {
         setActiveAnalysisId(null);
     }, [])
 
+    const compareByIndustry = useCallback(async (industry: string) => {
+        const sameIndustry = companies.filter(
+            (c) => c.industry === industry && !selectedIds.includes(c.id)
+        )
+        for (const company of sameIndustry) {
+            try {
+                const profits = await getProfits({id: company.id})
+                setSelected((prev) => [
+                    ...prev,
+                    {
+                        company,
+                        profits,
+                        color: COMPANY_COLORS[prev.length % COMPANY_COLORS.length],
+                    },
+                ])
+            } catch (e) {
+                console.error("Не удалось загрузить данные:", e)
+            }
+        }
+    }, [companies, selectedIds, getProfits])
+
     const chartData = useMemo(() => buildChartData(selected, metric), [selected, metric])
 
     const activeMetricLabel = METRICS.find((m) => m.key === metric)?.label ?? ""
@@ -124,7 +145,8 @@ export default function CompaniesPage() {
                     selectedIds={selectedIds}
                     selected={selected}
                     onSearch={setSearch}
-                    onSetActiveCompanyForNotes={(value) => setActiveCompanyForNotes(value)}/>
+                    onSetActiveCompanyForNotes={(value) => setActiveCompanyForNotes(value)}
+                    onCompareByIndustry={compareByIndustry}/>
 
                 {/* Правая панель — график */}
                 <div className="space-y-4">

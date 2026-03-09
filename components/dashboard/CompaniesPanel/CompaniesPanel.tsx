@@ -19,6 +19,7 @@ interface Props {
     onSearch: (value: string) => void
     toggleCompany: (company: Company) => void;
     onSetActiveCompanyForNotes: (company: { id: string, name: string }) => void;
+    onCompareByIndustry: (industry: string) => void;
 }
 
 export const CompaniesPanel: FC<Props> = ({
@@ -30,7 +31,8 @@ export const CompaniesPanel: FC<Props> = ({
                                               onSearch,
                                               isProfitsLoading,
                                               toggleCompany,
-                                              onSetActiveCompanyForNotes
+                                              onSetActiveCompanyForNotes,
+                                              onCompareByIndustry
                                           }) => {
 
     return <div className="space-y-4">
@@ -69,7 +71,8 @@ export const CompaniesPanel: FC<Props> = ({
                                 selectedEntry={selectedEntry}
                                 isProfitsLoading={isProfitsLoading}
                                 toggleCompany={toggleCompany}
-                                onSetActiveCompanyForNotes={onSetActiveCompanyForNotes}/>
+                                onSetActiveCompanyForNotes={onSetActiveCompanyForNotes}
+                                onCompareByIndustry={onCompareByIndustry}/>
                         )
                     })
                 )}
