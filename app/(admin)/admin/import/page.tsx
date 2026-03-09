@@ -7,8 +7,10 @@ import {formatFileSize} from "@/utils/formatFileSize"
 import {useImportBatchCSV, type CompanyInfo, type BatchResultItem} from "@/app/api/upload/useImportBatchCSV"
 import {Spinner} from "@/components/ui/spinner"
 import {toast} from "sonner"
+import {FileEntryItem} from "@/components/admin/BatchImport/Rows/FileEntryItem";
+import {DragonDropFiles} from "@/components/admin/BatchImport/DragonDropFilesZone/DragonDropFiles";
 
-type FileEntry = {
+export type FileEntry = {
     file: File
     companyName: string
     ticker: string
@@ -17,7 +19,6 @@ type FileEntry = {
 
 export default function BatchImportPage() {
     const [entries, setEntries] = useState<FileEntry[]>([])
-    const [dragging, setDragging] = useState(false)
     const [results, setResults] = useState<BatchResultItem[] | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -44,28 +45,6 @@ export default function BatchImportPage() {
         setEntries((prev) => [...prev, ...newEntries])
         setResults(null)
     }, [])
-
-    const handleDragOver = useCallback((e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setDragging(true)
-    }, [])
-
-    const handleDragLeave = useCallback((e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setDragging(false)
-    }, [])
-
-    const handleDrop = useCallback(
-        (e: React.DragEvent) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setDragging(false)
-            addFiles(e.dataTransfer.files)
-        },
-        [addFiles]
-    )
 
     const handleFileSelect = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +98,7 @@ export default function BatchImportPage() {
                 },
                 onError: (error) => {
                     toast.error(
-                        (error.response?.data as any)?.message ?? "Ошибка импорта"
+                        (error.response?.data as unknown as { message: string})?.message ?? "Ошибка импорта"
                     )
                 },
             }
@@ -131,8 +110,6 @@ export default function BatchImportPage() {
         setResults(null)
     }
 
-    console.log({results})
-
     return (
         <div className="space-y-6">
             <div>
@@ -143,26 +120,7 @@ export default function BatchImportPage() {
             </div>
 
             {/* Drop zone */}
-            <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-12 cursor-pointer transition-colors ${
-                    dragging
-                        ? "border-ring bg-accent/50"
-                        : "border-border hover:border-ring/50 hover:bg-muted/30"
-                }`}
-            >
-                <Upload className={`size-10 ${dragging ? "text-ring" : "text-muted-foreground"}`}/>
-                <div className="text-center">
-                    <p className="text-sm font-medium">Перетащите CSV файлы сюда</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                        или{" "}
-                        <span className="text-primary underline underline-offset-2">выберите файлы</span>
-                    </p>
-                </div>
-            </div>
+            <DragonDropFiles fileInputRef={fileInputRef} addFiles={addFiles} />
             <input
                 ref={fileInputRef}
                 type="file"
@@ -191,65 +149,12 @@ export default function BatchImportPage() {
 
                     <div className="space-y-3">
                         {entries.map((entry, index) => (
-                            <div
+                            <FileEntryItem
                                 key={`${entry.file.name}-${index}`}
-                                className="rounded-lg border border-border bg-card p-4"
-                            >
-                                <div className="flex items-start gap-3">
-                                    <FileIcon className="size-5 text-muted-foreground shrink-0 mt-0.5"/>
-                                    <div className="flex-1 min-w-0 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium truncate">
-                                                    {entry.file.name}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {formatFileSize(entry.file.size)}
-                                                </p>
-                                            </div>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon-xs"
-                                                onClick={() => removeEntry(index)}
-                                            >
-                                                <X className="size-4"/>
-                                            </Button>
-                                        </div>
-
-                                        <div className="grid grid-cols-3 gap-3">
-                                            <input
-                                                type="text"
-                                                value={entry.companyName}
-                                                onChange={(e) =>
-                                                    updateEntry(index, "companyName", e.target.value)
-                                                }
-                                                placeholder="Название компании *"
-                                                className="rounded-md border border-input bg-background px-3 py-1.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                                            />
-                                            <input
-                                                type="text"
-                                                value={entry.ticker}
-                                                onChange={(e) =>
-                                                    updateEntry(index, "ticker", e.target.value.toUpperCase())
-                                                }
-                                                placeholder="Тикер"
-                                                className="rounded-md border border-input bg-background px-3 py-1.5 text-sm font-mono uppercase placeholder:text-muted-foreground placeholder:normal-case placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-ring"
-                                            />
-                                            <input
-                                                type="text"
-                                                value={entry.industry}
-                                                onChange={(e) =>
-                                                    updateEntry(index, "industry", e.target.value)
-                                                }
-                                                placeholder="Отрасль"
-                                                className="rounded-md border border-input bg-background px-3 py-1.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                                entry={entry}
+                                index={index}
+                                removeEntry={removeEntry}
+                                updateEntry={updateEntry}/>))}
                     </div>
 
                     <div className="flex items-center gap-3 justify-end">
