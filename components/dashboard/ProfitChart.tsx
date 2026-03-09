@@ -11,7 +11,7 @@ import {
     Legend,
     type TooltipProps,
 } from "recharts"
-import dayjs from "dayjs"
+import dayjs from "dayjs";
 
 interface ProfitChartProps {
     data: Record<string, string | number | null>[]

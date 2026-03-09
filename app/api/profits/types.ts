@@ -12,7 +12,7 @@ export interface FinancialData {
     evEbitda: number;
     roe: number;
     pe: number;
-    periodLabel: number;
+    periodLabel: string;
     createdAt: string;
 }
 
