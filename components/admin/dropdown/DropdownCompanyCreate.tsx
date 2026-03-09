@@ -1,6 +1,7 @@
 "use client"
 
 import {useState} from "react"
+import {useRouter} from "next/navigation"
 import {
     DropdownMenu, DropdownMenuContent,
     DropdownMenuGroup,
@@ -13,6 +14,7 @@ import {DialogCompanyCreate} from "@/components/admin/dialog/DialogCompanyCreate
 
 export const DropdownCompanyCreate = () => {
     const [dialogOpen, setDialogOpen] = useState(false)
+    const router = useRouter()
 
     return <>
         <DropdownMenu>
@@ -24,7 +26,7 @@ export const DropdownCompanyCreate = () => {
                     <DropdownMenuItem onSelect={() => setDialogOpen(true)}>
                         Добавить
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push("/admin/import")}>
                         Добавить несколько
                     </DropdownMenuItem>
                 </DropdownMenuGroup>

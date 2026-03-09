@@ -11,6 +11,7 @@ import {
     BarChart3,
     ChevronLeft,
     ChevronRight,
+    Upload,
 } from "lucide-react"
 import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
@@ -19,6 +20,7 @@ import {useState} from "react"
 const navItems = [
     {label: "Дашборд", href: "/admin", icon: LayoutDashboard},
     {label: "Компании", href: "/admin/companies", icon: Building2},
+    {label: "Импорт", href: "/admin/import", icon: Upload},
     {label: "Пользователи", href: "/admin/users", icon: Users},
     {label: "Отчёты", href: "/admin/reports", icon: FileText},
     {label: "Аналитика", href: "/admin/analytics", icon: BarChart3},

@@ -2,9 +2,8 @@
 
 import Link from "next/link"
 import {useState} from "react"
-import {Search, MoreHorizontal, ArrowUpDown, Building2, Loader2} from "lucide-react"
+import {Search, MoreHorizontal, ArrowUpDown, Building2} from "lucide-react"
 import {Button} from "@/components/ui/button"
-import {MenuBarCompanies} from "@/components/admin/menuBar/MenuBarCompanies"
 import {DropdownCompanyCreate} from "@/components/admin/dropdown/DropdownCompanyCreate"
 import {useGetCompanies} from "@/app/api/companies/useGetCompanies"
 import {Spinner} from "@/components/ui/spinner";
@@ -20,8 +19,6 @@ export default function CompaniesPage() {
 
     return (
         <div className="space-y-6">
-            <MenuBarCompanies/>
-
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">Компании</h1>
