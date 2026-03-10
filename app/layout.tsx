@@ -3,6 +3,7 @@
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {ThemeProvider} from "next-themes";
 import React from "react";
 
 const geistSans = Geist({
@@ -24,11 +25,13 @@ export default function RootLayout({
 }>) {
     return (
         <QueryClientProvider client={queryClient}>
-            <html lang="ru" className="dark" data-theme="dark">
+            <html lang="ru" suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-            {children}
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+                {children}
+            </ThemeProvider>
             </body>
             </html>
         </QueryClientProvider>
