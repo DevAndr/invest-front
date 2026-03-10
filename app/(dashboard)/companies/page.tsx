@@ -13,7 +13,7 @@ import {NotesPanel} from "@/components/dashboard/NotesPanel";
 import {CompaniesPanel} from "@/components/dashboard/CompaniesPanel/CompaniesPanel";
 import {MetricsWidget} from "@/components/dashboard/MetricsWidget";
 import {AnalysisWidget} from "@/components/dashboard/AnalysisWidget";
-import {PortfolioWidget} from "@/components/dashboard/PortfolioWidget";
+import {PortfolioDashboard} from "@/components/dashboard/PortfolioDashboard";
 import Link from "next/link";
 import {ProfitChart} from "@/components/dashboard/ProfitChart";
 
@@ -213,7 +213,7 @@ export default function CompaniesPage() {
 
                     <MetricsWidget companyId={activeAnalysisId}/>
                     <AnalysisWidget companyId={activeAnalysisId}/>
-                    <PortfolioWidget/>
+                    <PortfolioDashboard/>
                 </div>
             </div>
 
